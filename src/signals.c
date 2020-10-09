@@ -17,9 +17,9 @@
 #include "dsp.h"
 #include "dma.h"
 #include "adc.h"
-
-#include "uart.h"
+#include "usart.h"
 #include "gpio.h"
+
 #include <stdio.h>
 
 
@@ -1142,9 +1142,9 @@ resp_t Signal_Drawing (void)
 
         break;
 
-    case FAST_DISCHARGE:		//la medicion de corriente ahora esta en I_Sense_negado
+    case FAST_DISCHARGE:		//la medicion de corriente ahora esta en I_Sense_Neg
         d = PID_roof ((*p_signal_running * signal_to_gen.power / 100),
-                      I_Sense_negado,
+                      I_Sense_Neg,
                       d,
                       &ez1,
                       &ez2);

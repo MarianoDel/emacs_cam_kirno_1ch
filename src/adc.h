@@ -25,25 +25,17 @@
 #endif
 //----------- End of ADC Configurations --------------//
 
-#ifdef VER_2_0
-#define I_Sense           adc_ch[0]
-#define I_Sense_negado    adc_ch[1]
+#define I_Sense    adc_ch[0]
+#define I_Sense_Neg    adc_ch[1]
 #define ADC_CHANNEL_QUANTITY         2
 #define ADC_LAST_CHANNEL_QUANTITY    (ADC_CHANNEL_QUANTITY - 1)
-#endif
 
-#if (defined VER_1_0) || (defined VER_1_1)
-#define Input_Signal      adc_ch[0]
-#define I_Sense           adc_ch[1]
-#define I_Sense_negado    adc_ch[2]
-#define ADC_CHANNEL_QUANTITY         3
-#define ADC_LAST_CHANNEL_QUANTITY    (ADC_CHANNEL_QUANTITY - 1)
-#endif
+#define ADC_All_Orer_Channels    (ADC_Channel_1 | ADC_Channel_3)
 
 
 #define RCC_ADC_CLK 		(RCC->APB2ENR & 0x00000200)
-#define RCC_ADC_CLK_ON 		RCC->APB2ENR |= 0x00000200
-#define RCC_ADC_CLK_OFF 	RCC->APB2ENR &= ~0x00000200
+#define RCC_ADC_CLK_ON 		(RCC->APB2ENR |= 0x00000200)
+#define RCC_ADC_CLK_OFF 	(RCC->APB2ENR &= ~0x00000200)
 
 /* Temperature sensor calibration value address */
 #define TEMP110_CAL_ADDR ((uint16_t*) ((uint32_t) 0x1FFFF7C2))

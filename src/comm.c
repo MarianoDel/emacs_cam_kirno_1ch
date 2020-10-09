@@ -10,7 +10,7 @@
 //------------------------------------------------
 #include "comm.h"
 #include "signals.h"
-#include "uart.h"
+#include "usart.h"
 #include "hard.h"    //para conocer que hacer con el LED, y macros
 #include "stm32f0xx.h"
 
@@ -96,7 +96,7 @@ unsigned char SerialProcess (void)
     if (usart1_have_data)
     {
         usart1_have_data = 0;
-        bytes_readed = ReadUsart1Buffer((unsigned char *) buffMessages, sizeof(buffMessages));
+        bytes_readed = Usart1ReadBuffer((unsigned char *) buffMessages, sizeof(buffMessages));
     }
     return bytes_readed;
 }

@@ -117,21 +117,11 @@ typedef enum
         LOW_RIGHT_PWM (0);\
     } while (0)
 
-#ifdef VER_2_0
 #define SIGNAL_PWM_NORMAL_DISCHARGE do {\
         HIGH_LEFT_PWM (0);\
         LOW_RIGHT_PWM (DUTY_ALWAYS);\
     } while (0)
-#endif
 
-#if (defined VER_1_0) || (defined VER_1_1)
-#define SIGNAL_PWM_NORMAL_DISCHARGE do {\
-        HIGH_LEFT_PWM(0);
-        LOW_LEFT_PWM(0);
-        HIGH_RIGHT_PWM(0);
-        LOW_RIGHT_PWM(DUTY_ALWAYS);
-    } while (0)
-#endif
 
 //--- Exported functions ---//
 // resp_t SetSignalType (signals_struct_t *, signal_type_t);

@@ -11,21 +11,35 @@
 #include "stm32f0xx.h"
 
 
+// Private Types Macros and Constants ------------------------------------------
+// Led States
+typedef enum
+{    
+    START_BLINKING = 0,
+    WAIT_TO_OFF,
+    WAIT_TO_ON,
+    WAIT_NEW_CYCLE
+} led_state_t;
 
-/* Externals variables ---------------------------------------------------------*/
+
+#define LED_BLINKING_ON    LED_ON
+#define LED_BLINGING_OFF    LED_OFF
+#define TT_LED_IN_ON_OFF    200
+#define TT_LED_WAIT_IN_OFF    2000
+
+// Externals -------------------------------------------------------------------
 extern volatile unsigned short timer_led;
 
 
-/* Global variables ------------------------------------------------------------*/
-
+// Globals ---------------------------------------------------------------------
 led_state_t led_state = START_BLINKING;
 unsigned char blink = 0;
 unsigned char how_many_blinks = 0;
 
 
+// Module Private Functions ----------------------------------------------------
 
-/* Module Functions ------------------------------------------------------------*/
-
+// Module Functions ------------------------------------------------------------
 //cambia configuracion de bips del LED
 void ChangeLed (unsigned char how_many)
 {
@@ -43,19 +57,15 @@ void UpdateLed (void)
             blink = how_many_blinks;
             
             if (blink)
-            {
-                LED_ON;
-                timer_led = 200;
-                led_state++;
-                blink--;
-            }
+                led_state = WAIT_TO_ON;
+
             break;
 
         case WAIT_TO_OFF:
             if (!timer_led)
             {
-                LED_OFF;
-                timer_led = 200;
+                LED_BLINGING_OFF;
+                timer_led = TT_LED_IN_ON_OFF;
                 led_state++;
             }
             break;
@@ -66,14 +76,14 @@ void UpdateLed (void)
                 if (blink)
                 {
                     blink--;
-                    timer_led = 200;
+                    timer_led = TT_LED_IN_ON_OFF;
                     led_state = WAIT_TO_OFF;
-                    LED_ON;
+                    LED_BLINKING_ON;
                 }
                 else
                 {
                     led_state = WAIT_NEW_CYCLE;
-                    timer_led = 2000;
+                    timer_led = TT_LED_WAIT_IN_OFF;
                 }
             }
             break;
@@ -90,3 +100,5 @@ void UpdateLed (void)
     }
 #endif
 }
+
+//--- end of file ---//

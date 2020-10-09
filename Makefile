@@ -91,10 +91,11 @@ SRC += ./src/hard.c
 SRC += ./src/it.c
 SRC += ./src/tim.c
 # SRC += ./src/spi.c
-SRC += ./src/uart.c
+SRC += ./src/usart.c
 SRC += ./src/signals.c
 SRC += ./src/comm.c
 SRC += ./src/utils.c
+SRC += ./src/test_functions.c
 
 
 
@@ -222,9 +223,16 @@ clean:
 	rm -f $(FULL_PRJ).map
 	rm -f $(FULL_PRJ).hex
 	rm -f $(FULL_PRJ).bin
-#	rm $(SRC:.c=.c.bak)
 	rm -f $(SRC:.c=.lst)
-#   rm $(ASRC:.s=.s.bak)
 	rm -f $(ASRC:.s=.lst)
+
+tests:
+	# primero objetos de los modulos a testear, solo si son tipo HAL sin dependencia del hard
+	# gcc -c src/lcd.c -I. $(INCDIR)
+	# gcc src/tests.c lcd.o
+	# ./a.out
+	# sino copiar funcion a testear al main de tests.c
+	gcc src/tests.c
+	./a.out
 
 # *** EOF ***

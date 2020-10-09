@@ -12,48 +12,21 @@
 
 
 //----------- Defines For Configuration -------------
-//----------- Harcode Direction -------------
-// #define OWN_CHANNEL 1
-// #define OWN_CHANNEL 2
-#define OWN_CHANNEL 3
 
 //----------- Hardware Board Version -------------
-// #define VER_1_0
-// #define VER_1_1		//mismo pinout que VER_1_0
-#define VER_2_0		//micro en placa grande
+#define HARD_VER_1_0    //first board manufacturer
 
 //----------- Software Version -------------------
-// #define SOFT_VER_1_2    //usa comandos para pantalla DWIN DGUS
-                        //
+#define SOFT_VER_1_0    //first program release
 
-#define SOFT_VER_1_1    //usa DMA en ADC, la senial es solo la parte util, el resto son timers
-                        //para la frecuencia y pid mueve timers y velocidad de muestreo
-
-// #define SOFT_VER_1_0    //este es el soft de las primeras placas, la senial la hacia con
-                        //puntero y la frecuencia saltando con ese mismo puntero
-                        //sin DMA para el ADC y seniales con 0V en tabla
-
-#ifdef SOFT_VER_1_2
-#define SOFT_ANNOUNCEMENT "Software V: 1.2"
-#endif
-
-#ifdef SOFT_VER_1_1
-#define SOFT_ANNOUNCEMENT "Software V: 1.1"
-#endif
-
-#ifdef SOFT_VER_1_0
-#define SOFT_ANNOUNCEMENT "Software V: 1.0"
-#endif
 
 //-------- Max Current Allowed on Bobins ----------------
 // #define MAX_CURRENT_3_0_A
 #define MAX_CURRENT_3_6_A
 
 //-------- Type of Program ----------------
-#define POWER_WITH_MANAGEMENT
-// #define ONLY_POWER_WITHOUT_MANAGEMENT
-// #define INT_SPEED_RESPONSE    //genera seniales y ve int, 30ms y reactiva solo
-// #define INT_WITH_LED        //no genero nada, solo espero int y muevo el LED
+#define SYSTEM_AUTONOMOUS
+#define SYSTEM_WITH_MANAGEMENT
 
 
 //-------- Type of Program and Features ----------------
@@ -66,9 +39,6 @@
 //Si utiliza la proteccion de no current
 #define USE_SOFT_NO_CURRENT
 
-//Modo de uso de la USART (placa individual single - placa enganchada bus)
-#define USART_IN_BUS
-// #define USART_SINGLE
 
 //el LED lo uso para debug de varios procesos, ver mas abajo cuales
 // #define USE_LED_FOR_DEBUG
@@ -76,13 +46,6 @@
 //-------- Kind of Reports Sended ----------------
 
 //-------- Others Configurations depending on the formers ------------
-#define SYNC_CHAR    '*'
-
-#ifdef USART_IN_BUS
-#define USART_TX_OUTPUT_OPEN_DRAIN
-#endif
-
-
 #ifdef USE_SOFT_OVERCURRENT
 // #define USE_SOFT_OVERCURRENT_WITH_PERCENTAGE
 #define USE_SOFT_OVERCURRENT_WITH_ABSOLUTE_VALUE
@@ -97,7 +60,7 @@
 #endif
 #endif
 
-//cantidad de seniales que permito sin corriente antes de poner error
+//quantity of signals before anounce the no current error
 #ifdef USE_SOFT_NO_CURRENT
 #define SIGNALS_ADMITED_WITH_NO_CURRENT    5    
 #endif
@@ -116,23 +79,53 @@
 
 //-------- End Of Defines For Configuration ------
 
-#if (defined VER_1_0) || (defined VER_1_1) || (defined VER_2_0)
-//GPIOA pin0	Input_Signal
-//GPIOA pin1	I_Sense
+//-------- Anouncemets ---------------------------
+#ifdef HARD_VER_1_2
+#define HARD_ANNOUNCEMENT "Hardware V: 1.2"
+#endif
+
+#ifdef HARD_VER_1_1
+#define HARD_ANNOUNCEMENT "Hardware V: 1.1"
+#endif
+
+#ifdef HARD_VER_1_0
+#define HARD_ANNOUNCEMENT "Hardware V: 1.0"
+#endif
+
+#ifdef SOFT_VER_1_2
+#define SOFT_ANNOUNCEMENT "Software V: 1.2"
+#endif
+
+#ifdef SOFT_VER_1_1
+#define SOFT_ANNOUNCEMENT "Software V: 1.1"
+#endif
+
+#ifdef SOFT_VER_1_0
+#define SOFT_ANNOUNCEMENT "Software V: 1.0"
+#endif
+
+
+//--- Gpios Configuration ----------------------------------
+//GPIOA pin0
+#define BUZZER    ((GPIOA->ODR & 0x0001) != 0)
+#define BUZZER_ON    (GPIOA->BSRR = 0x00000001)
+#define BUZZER_OFF    (GPIOA->BSRR = 0x00010000)
+
+//GPIOA pin1    ADC_Channel_1 I_Sense
 
 //GPIOA pin2	PROT Input
-#define PROTECT	((GPIOA->IDR & 0x0004) != 0)
+#define PROT    ((GPIOA->IDR & 0x0004) != 0)
 
-//GPIOA pin3	I_Sense_negado
+//GPIOA pin3	ADC_Channel_3 I_Sense_Neg
 
 //GPIOA pin4	NC
 //GPIOA pin5	NC
+//GPIOA pin6    NC
 
-//GPIOA pin6	para TIM3_CH1	LOW_LEFT
-//GPIOA pin7	para TIM3_CH2	HIGH_LEFT
-//GPIOB pin0	para TIM3_CH3	LOW_RIGHT
-//GPIOB pin1	para TIM3_CH4	HIGH_RIGHT
+//GPIOA pin7    TIM3_CH2 HIGH_LEFT
+//GPIOB pin0    TIM3_CH3 LOW_RIGHT
 
+//GPIOB pin1    NC
 //GPIOA pin8	NC
 
 //GPIOA pin9	usart1 tx
@@ -141,26 +134,29 @@
 //GPIOA pin11	NC
 
 //GPIOA pin12
-#define LED ((GPIOA->ODR & 0x1000) != 0)
-#define LED_ON	GPIOA->BSRR = 0x00001000
-#define LED_OFF GPIOA->BSRR = 0x10000000
+#define LED    ((GPIOA->ODR & 0x1000) != 0)
+#define LED_ON    (GPIOA->BSRR = 0x00001000)
+#define LED_OFF    (GPIOA->BSRR = 0x10000000)
 
 //GPIOA pin13	NC
 //GPIOA pin14	NC
-//GPIOA pin15	NC
 
-//GPIOB pin3	NC
-//GPIOB pin4	NC
+//GPIOA pin15    ON_TREATMENT
+#define ON_TREATMENT    ((GPIOA->IDR & 0x8000) == 0)
+
+//GPIOB pin3    Config Input - NC
+//GPIOB pin4    Config Input - NC
+
 //GPIOB pin5	NC
 
 //GPIOB pin6
 #define STOP_JUMPER ((GPIOB->IDR & 0x0040) == 0)
 
 //GPIOB pin7	NC
-#endif	//
 
+//--- End of Gpios Configuration ---------------------------
 
-//ESTADOS DEL PROGRAMA PRINCIPAL
+// Main Program States
 typedef enum
 {
     MAIN_INIT = 0,
@@ -178,14 +174,6 @@ typedef enum
 
 } main_state_t;
 
-//ESTADOS DEL LED
-typedef enum
-{    
-    START_BLINKING = 0,
-    WAIT_TO_OFF,
-    WAIT_TO_ON,
-    WAIT_NEW_CYCLE
-} led_state_t;
 
 //Estados Externos de LED BLINKING
 #define LED_NO_BLINKING    0

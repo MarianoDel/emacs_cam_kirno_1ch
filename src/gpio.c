@@ -54,8 +54,6 @@ void GPIO_Config (void)
     //10: Pull-down
     //11: Reserved
 
-#if (defined VER_1_0) || (defined VER_1_1) || (defined VER_2_0)
-        
     //--- GPIO A ---//
     if (!GPIOA_CLK)
         GPIOA_CLK_ON;
@@ -161,8 +159,6 @@ void GPIO_Config (void)
     NVIC_EnableIRQ(EXTI2_3_IRQn);
     NVIC_SetPriority(EXTI2_3_IRQn, 3);
 #endif
-
-#endif	//if version
 }
 
 inline void EXTIOff (void)
