@@ -21,7 +21,12 @@
 void TF_Led (void);
 void TF_Led_Blinking (void);
 void TF_Buzzer (void);
-void TF_Gpio_Input (void);
+void TF_Gpio_Input_Prot (void);
+void TF_Gpio_Input_Stop_Jumper (void);
+void TF_Gpio_Input_On_Treatment (void);
+
+void TF_Tim3_Ch2_Pwm (void);
+void TF_Tim3_Ch3_Pwm (void);
 
 void TF_Usart1_Single (void);
 void TF_Usart1_Multiple (void);

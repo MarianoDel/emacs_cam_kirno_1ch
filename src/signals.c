@@ -374,10 +374,10 @@ void TreatmentManager (void)
 //         case TREATMENT_INIT_FIRST_TIME:
 //             if (!timer_signals)
 //             {
-//                 HIGH_LEFT_PWM(0);
+//                 HIGH_LEFT(0);
 //                 LOW_LEFT_PWM(0);
 //                 HIGH_RIGHT_PWM(0);
-//                 LOW_RIGHT_PWM(DUTY_ALWAYS);
+//                 LOW_RIGHT(DUTY_ALWAYS);
 
 //                 if (GetErrorStatus() == ERROR_OK)
 //                 {
@@ -1093,7 +1093,7 @@ resp_t Signal_Drawing (void)
         //reviso si necesito cambiar a descarga por tau
         if (d < 0)
         {
-            HIGH_LEFT_PWM(0);
+            HIGH_LEFT(0);
             drawing_state = TAU_DISCHARGE;
             d = 0;	//limpio para pid descarga
         }
@@ -1102,7 +1102,7 @@ resp_t Signal_Drawing (void)
             if (d > DUTY_95_PERCENT)		//no pasar del 95% para dar tiempo a los mosfets
                 d = DUTY_95_PERCENT;
             
-            HIGH_LEFT_PWM(d);
+            HIGH_LEFT(d);
         }
 
         if (Signal_UpdatePointer() != resp_continue)
@@ -1121,9 +1121,9 @@ resp_t Signal_Drawing (void)
         if (d < 0)
         {
             if (-d < DUTY_100_PERCENT)
-                LOW_RIGHT_PWM(DUTY_100_PERCENT + d);
+                LOW_RIGHT(DUTY_100_PERCENT + d);
             else
-                LOW_RIGHT_PWM(0);    //descarga maxima
+                LOW_RIGHT(0);    //descarga maxima
 
             drawing_state = FAST_DISCHARGE;
         }
@@ -1133,7 +1133,7 @@ resp_t Signal_Drawing (void)
             if (d > DUTY_95_PERCENT)		//no pasar del 95% para dar tiempo a los mosfets
                 d = DUTY_95_PERCENT;
 
-            HIGH_LEFT_PWM(d);
+            HIGH_LEFT(d);
             drawing_state = NORMAL_DISCHARGE;
         }
 
@@ -1153,14 +1153,14 @@ resp_t Signal_Drawing (void)
         if (d < 0)
         {
             if (-d < DUTY_100_PERCENT)
-                LOW_RIGHT_PWM(DUTY_100_PERCENT + d);
+                LOW_RIGHT(DUTY_100_PERCENT + d);
             else
-                LOW_RIGHT_PWM(0);    //descarga maxima
+                LOW_RIGHT(0);    //descarga maxima
         }
         else
         {
             //vuelvo a TAU_DISCHARGE
-            LOW_RIGHT_PWM(DUTY_ALWAYS);
+            LOW_RIGHT(DUTY_ALWAYS);
             drawing_state = TAU_DISCHARGE;
         }
 
@@ -1260,8 +1260,8 @@ void Overcurrent_Shutdown (void)
 #endif
 
     //primero freno todos los PWM
-    HIGH_LEFT_PWM(0);
-    LOW_RIGHT_PWM(0);
+    HIGH_LEFT(0);
+    LOW_RIGHT(0);
 
     DISABLE_TIM3;
 

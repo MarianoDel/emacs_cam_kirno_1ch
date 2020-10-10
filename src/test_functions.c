@@ -73,6 +73,42 @@ void TF_Buzzer (void)
 }
 
 
+void TF_Gpio_Input_Prot (void)
+{
+    while (1)
+    {
+        if (PROT)
+            LED_ON;
+        else
+            LED_OFF;
+    }
+}
+
+
+void TF_Gpio_Input_Stop_Jumper (void)
+{
+    while (1)
+    {
+        if (STOP_JUMPER)
+            LED_ON;
+        else
+            LED_OFF;
+    }
+}
+
+
+void TF_Gpio_Input_On_Treatment (void)
+{
+    while (1)
+    {
+        if (ON_TREATMENT)
+            LED_ON;
+        else
+            LED_OFF;
+    }
+}
+
+
 void TF_Usart1_TxRx (void)
 {
     for (unsigned char i = 0; i < 5; i++)
@@ -152,7 +188,24 @@ void TF_Usart1_Adc_Dma (void)
 }
 
 
+void TF_Tim3_Ch2_Pwm (void)
+{
+    TIM_3_Init ();    //lo utilizo para mosfets TIM3_CH2->HIGH_LEFT, TIM3_CH3->LOW_RIGHT
 
+    HIGH_LEFT(DUTY_50_PERCENT);
+
+    while (1);
+}
+
+
+void TF_Tim3_Ch3_Pwm (void)
+{
+    TIM_3_Init ();    //lo utilizo para mosfets TIM3_CH2->HIGH_LEFT, TIM3_CH3->LOW_RIGHT
+
+    LOW_RIGHT(DUTY_50_PERCENT);
+
+    while (1);
+}
 
 
 

@@ -113,13 +113,13 @@ typedef enum
 #define FlushErrorStatus() SetErrorStatus(ERROR_FLUSH_MASK)
 
 #define SIGNAL_PWM_FAST_DISCHARGE do {\
-        HIGH_LEFT_PWM (0);\
-        LOW_RIGHT_PWM (0);\
+        HIGH_LEFT (0);\
+        LOW_RIGHT (0);\
     } while (0)
 
 #define SIGNAL_PWM_NORMAL_DISCHARGE do {\
-        HIGH_LEFT_PWM (0);\
-        LOW_RIGHT_PWM (DUTY_ALWAYS);\
+        HIGH_LEFT (0);\
+        LOW_RIGHT (DUTY_ALWAYS);\
     } while (0)
 
 

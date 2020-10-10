@@ -108,7 +108,19 @@ int main(void)
     // TF_Led_Blinking ();
 
     // TF_Gpio_Input ();
+
+    // TF_Buzzer ();
+
+    // TF_Gpio_Input_Prot ();
     
+    // TF_Gpio_Input_Stop_Jumper ();
+    
+    // TF_Gpio_Input_On_Treatment ();
+    
+    // TF_Tim3_Ch2_Pwm ();
+    
+    // TF_Tim3_Ch3_Pwm ();
+
     // TF_Usart1_Single ();
     
     // TF_Usart1_Multiple ();
@@ -118,8 +130,6 @@ int main(void)
     // TF_Usart1_Adc ();
     
     // TF_Usart1_Adc_Dma ();
-    
-    // TF_Tim3_Pwm ();
     
     //--- End of Hard Test Functions ---//
 
@@ -131,7 +141,7 @@ int main(void)
 //     Usart1Config();
 
 //     TIM_1_Init ();    //lo utilizo para synchro ADC muestras 1500Hz
-//     TIM_3_Init ();    //lo utilizo para mosfets LOW_LEFT, HIGH_LEFT, LOW_RIGHT, HIGH_RIGHT
+//     TIM_3_Init ();    //lo utilizo para mosfets TIM3_CH2->HIGH_LEFT, TIM3_CH3->LOW_RIGHT
 
 //     TIM_16_Init ();    //lo uso para los tiempos muertos entre las funciones de generacion de seniales
 
