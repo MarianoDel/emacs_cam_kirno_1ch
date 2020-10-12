@@ -9,7 +9,10 @@
 //---------------------------------------------
 #include "hard.h"
 #include "stm32f0xx.h"
+#include "tim.h"
+#include "usart.h"
 
+#include <stdio.h>
 
 // Private Types Macros and Constants ------------------------------------------
 // Led States
@@ -99,6 +102,66 @@ void UpdateLed (void)
             break;
     }
 #endif
+}
+
+void WelcomeCode (void)
+{
+    char str [128] = { 0 };
+    
+    Usart1Send("\r\nKirno -- Camilla One Channel --\r\n");
+
+#ifdef HARD_ANNOUNCEMENT
+    Usart1Send(HARD_ANNOUNCEMENT);
+    Wait_ms(100);    
+#else
+#error	"No Hardware defined in hard.h file"
+#endif
+
+#ifdef SOFT_ANNOUNCEMENT
+    Usart1Send(SOFT_ANNOUNCEMENT);
+    Wait_ms(100);    
+#else
+#error	"No Soft Version defined in hard.h file"
+#endif
+    
+    // Main Program Type
+    Usart1Send("\r\nProgram Type:\n");
+    Wait_ms(100);
+    
+#ifdef SYSTEM_AUTONOMOUS
+    sprintf(str,"[%s] %s\n", __FILE__, str_macro(SYSTEM_AUTONOMOUS));
+    Usart1Send(str);
+    Wait_ms(40);
+#endif
+
+#ifdef SYSTEM_WITH_MANAGEMENT
+    sprintf(str,"[%s] %s\n", __FILE__, str_macro(SYSTEM_WITH_MANAGEMENT));
+    Usart1Send(str);
+    Wait_ms(40);
+#endif
+
+    // Program Features
+    Usart1Send("\r\nFeatures:\n");
+    Wait_ms(100);
+    
+#ifdef USE_PROTECTION_WITH_INT
+    sprintf(str,"[%s] %s\n", __FILE__, str_macro(USE_PROTECTION_WITH_INT));
+    Usart1Send(str);
+    Wait_ms(40);
+#endif
+
+#ifdef USE_SOFT_OVERCURRENT
+    sprintf(str,"[%s] %s\n", __FILE__, str_macro(USE_SOFT_OVERCURRENT));
+    Usart1Send(str);
+    Wait_ms(40);
+#endif
+
+#ifdef USE_SOFT_NO_CURRENT
+    sprintf(str,"[%s] %s\n", __FILE__, str_macro(USE_SOFT_NO_CURRENT));
+    Usart1Send(str);
+    Wait_ms(40);
+#endif
+    
 }
 
 //--- end of file ---//

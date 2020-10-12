@@ -119,7 +119,7 @@ int main(void)
     
     // TF_Tim3_Ch2_Pwm ();
     
-    TF_Tim3_Ch3_Pwm ();
+    // TF_Tim3_Ch3_Pwm ();
 
     // TF_Usart1_Single ();
     
@@ -136,158 +136,51 @@ int main(void)
     //--- End of Hard Test Functions ---//
 
 
-//     //--- Production Program ---//
-//     //--- Welcome code ---//
-//     LED_OFF;
+    //--- Production Program ---//
+    LED_OFF;
+    Usart1Config();
 
-//     Usart1Config();
+    TIM_1_Init ();    //lo utilizo para synchro ADC muestras 1500Hz
+    TIM_3_Init ();    //lo utilizo para mosfets TIM3_CH2->HIGH_LEFT, TIM3_CH3->LOW_RIGHT
+    HIGH_LEFT(DUTY_NONE);
+    LOW_RIGHT(DUTY_NONE);
 
-//     TIM_1_Init ();    //lo utilizo para synchro ADC muestras 1500Hz
-//     TIM_3_Init ();    //lo utilizo para mosfets TIM3_CH2->HIGH_LEFT, TIM3_CH3->LOW_RIGHT
+    TIM_16_Init ();    //lo uso para los tiempos muertos entre las funciones de generacion de seniales
 
-//     TIM_16_Init ();    //lo uso para los tiempos muertos entre las funciones de generacion de seniales
+    //-- ADC and DMA configuration
+    AdcConfig();
 
-//     //Update_TIM3_CH2 (10);
-//     // TIM3->CCR3 = 1000;
-//     // TIM3->ARR = 6858;
+    DMAConfig();
+    DMA1_Channel1->CCR |= DMA_CCR_EN;
 
-//     // while (1);
+    ADC1->CR |= ADC_CR_ADSTART;
 
-//     //--- Prueba Pines PWM ---//
-//     // EXTIOff ();
-//     // while (1)
-//     // {
-//     // 	for (d = 0; d < DUTY_100_PERCENT; d++)
-//     // 	{
-//     // 		Update_TIM3_CH1 (d);
-//     // 		Update_TIM3_CH2 (d);
-//     // 		Update_TIM3_CH3 (d);
-//     // 		Update_TIM3_CH4 (d);
-//     //
-//     // 		Wait_ms(2);
-//     // 	}
-//     // }
-//     //--- Fin Prueba Pines PWM ---//
+    //--- Welcome code ---//
+    WelcomeCode();
+    Usart1Send("\r\nStarting Main Program...\r\n");
+    while(1);
+    
+#ifdef ONLY_POWER_WITHOUT_MANAGEMENT
+    while (1)
+    {
+        //Cosas que dependen de las muestras
+        GenerateSignal();
+    }
+#endif
 
-//     //--- Prueba de seniales PWM ---//
-//     //CUADRADA baja
-//     // LOW_RIGHT_PWM(DUTY_100_PERCENT+1);
-//     // HIGH_RIGHT_PWM(0);
-//     //
-//     // while (1)
-//     // {
-//     // 	HIGH_LEFT_PWM(0);
-//     // 	LOW_LEFT_PWM(DUTY_50_PERCENT);
-//     //
-//     // 	Wait_ms(20);
-//     //
-//     // 	LOW_LEFT_PWM(0);
-//     //
-//     // 	Wait_ms(20);
-//     // }
+#ifdef POWER_WITH_MANAGEMENT
+    while (1)
+    {
+        //este es el programa principal, maneja a GenerateSignal()
+        TreatmentManager ();
 
-//     // //CUADRADA alta derecha
-//     // while (1)
-//     // {
-//     // 	HIGH_LEFT_PWM(0);
-//     // 	LOW_LEFT_PWM(DUTY_100_PERCENT+1);
-//     //
-//     // 	LOW_RIGHT_PWM(0);
-//     // 	HIGH_RIGHT_PWM(DUTY_50_PERCENT);
-//     //
-//     // 	Wait_ms(20);
-//     //
-//     // 	HIGH_RIGHT_PWM(0);
-//     // 	Wait_ms(20);
-//     // }
+        //Cosas que no dependen del estado del programa
+        UpdateCommunications();
 
-//     //Activo el ADC con DMA
-//     AdcConfig();
+        UpdateLed();
 
-//     //-- DMA configuration.
-//     DMAConfig();
-//     DMA1_Channel1->CCR |= DMA_CCR_EN;
-
-//     ADC1->CR |= ADC_CR_ADSTART;
-
-//     // for (i = 0; i < (3 * OWN_CHANNEL); i++)
-//     // {
-//     //     LED_ON;
-//     //     Wait_ms(200);
-//     //     LED_OFF;
-//     //     Wait_ms(200);
-//     // }
-//     Wait_ms(2000);
-        
-
-
-//     //--- Pruebas lazo PID
-//     //-- primero preparo el puente H segun la funcion que busque
-//     LOW_LEFT_PWM(0);
-//     HIGH_RIGHT_PWM(0);
-//     LOW_RIGHT_PWM(DUTY_100_PERCENT+1);
-
-//     HIGH_LEFT_PWM(0);	//este es el que actua
-
-
-// #ifndef INT_SPEED_RESPONSE
-//     //prueba de nuevas rutinas
-//     SetOwnChannel (OWN_CHANNEL);
-//     SetSignalTypeAndOffset (SINUSOIDAL_SIGNAL, ZERO_DEG_OFFSET);
-//     SetFrequency (30, 0);
-//     SetPower (50);
-// #endif
-
-// #ifdef INT_SPEED_RESPONSE
-//     //prueba de nuevas rutinas
-//     // SetOwnChannel (OWN_CHANNEL);
-//     // SetSignalType (SINUSOIDAL_SIGNAL);
-//     // SetFrequency (THIRTY_HZ);
-//     // SetPower (100);
-
-//     SetOwnChannel (OWN_CHANNEL);
-//     SetSignalTypeAndOffset (TRIANGULAR_SIGNAL, ZERO_DEG_OFFSET);
-//     SetFrequency (TEN_HZ);
-//     SetPower (100);
-// #endif
-
-// #ifdef ONLY_POWER_WITHOUT_MANAGEMENT
-//     while (1)
-//     {
-//         //Cosas que dependen de las muestras
-//         GenerateSignal();
-//     }
-// #endif
-
-// #ifdef POWER_WITH_MANAGEMENT
-//     while (1)
-//     {
-//         //este es el programa principal, maneja a GenerateSignal()
-//         TreatmentManager ();
-
-//         //Cosas que no dependen del estado del programa
-//         UpdateCommunications();
-
-//         UpdateLed();
-
-//     }
-// #endif
-
-// #ifdef INT_SPEED_RESPONSE
-//     while (1)
-//     {
-//         //solo genera la senial seteada mas arriba y en algun punto de la misma corta por int
-//         TreatmentManager_IntSpeed ();
-
-//     }
-// #endif
-
-// #ifdef INT_WITH_LED
-//     while (1)
-//     {
-//         //no genero nada, solo espero int y muevo el LED        
-//     }   
-// #endif
+    }
+#endif
 
     return 0;
 }

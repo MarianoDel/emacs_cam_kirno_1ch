@@ -270,4 +270,38 @@ void TF_Gpio_Int_Usart1 (void)
         }
     }
 }
+
+
+    //--- Prueba de seniales PWM ---//
+    //CUADRADA baja
+    // LOW_RIGHT_PWM(DUTY_100_PERCENT+1);
+    // HIGH_RIGHT_PWM(0);
+    //
+    // while (1)
+    // {
+    // 	HIGH_LEFT_PWM(0);
+    // 	LOW_LEFT_PWM(DUTY_50_PERCENT);
+    //
+    // 	Wait_ms(20);
+    //
+    // 	LOW_LEFT_PWM(0);
+    //
+    // 	Wait_ms(20);
+    // }
+
+    // //CUADRADA alta derecha
+    // while (1)
+    // {
+    // 	HIGH_LEFT_PWM(0);
+    // 	LOW_LEFT_PWM(DUTY_100_PERCENT+1);
+    //
+    // 	LOW_RIGHT_PWM(0);
+    // 	HIGH_RIGHT_PWM(DUTY_50_PERCENT);
+    //
+    // 	Wait_ms(20);
+    //
+    // 	HIGH_RIGHT_PWM(0);
+    // 	Wait_ms(20);
+    // }
+
 //--- end of file ---//

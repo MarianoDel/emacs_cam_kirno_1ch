@@ -85,27 +85,27 @@
 
 //-------- Anouncemets ---------------------------
 #ifdef HARD_VER_1_2
-#define HARD_ANNOUNCEMENT "Hardware V: 1.2"
+#define HARD_ANNOUNCEMENT "Hardware V: 1.2\r\n"
 #endif
 
 #ifdef HARD_VER_1_1
-#define HARD_ANNOUNCEMENT "Hardware V: 1.1"
+#define HARD_ANNOUNCEMENT "Hardware V: 1.1\r\n"
 #endif
 
 #ifdef HARD_VER_1_0
-#define HARD_ANNOUNCEMENT "Hardware V: 1.0"
+#define HARD_ANNOUNCEMENT "Hardware V: 1.0\r\n"
 #endif
 
 #ifdef SOFT_VER_1_2
-#define SOFT_ANNOUNCEMENT "Software V: 1.2"
+#define SOFT_ANNOUNCEMENT "Software V: 1.2\r\n"
 #endif
 
 #ifdef SOFT_VER_1_1
-#define SOFT_ANNOUNCEMENT "Software V: 1.1"
+#define SOFT_ANNOUNCEMENT "Software V: 1.1\r\n"
 #endif
 
 #ifdef SOFT_VER_1_0
-#define SOFT_ANNOUNCEMENT "Software V: 1.0"
+#define SOFT_ANNOUNCEMENT "Software V: 1.0\r\n"
 #endif
 
 
@@ -204,6 +204,7 @@ typedef enum
 // Module Functions ----------------------------------------------------------
 void ChangeLed (unsigned char);
 void UpdateLed (void);
+void WelcomeCode (void);
 
 
 #endif /* _HARD_H_ */
