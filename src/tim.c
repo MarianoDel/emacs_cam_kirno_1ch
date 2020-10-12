@@ -120,8 +120,6 @@ void TIM_1_Init (void)
 
 void TIM_3_Init (void)			//quiero algo alrededor de los 7KHz
 {
-    unsigned int temp = 0;
-
     if (!RCC_TIM3_CLK)
         RCC_TIM3_CLK_ON;
 
@@ -134,36 +132,30 @@ void TIM_3_Init (void)			//quiero algo alrededor de los 7KHz
     //TIM3->SMCR |= TIM_SMCR_SMS_2;    //reset mode link timer1    OJO no anda
     // TIM3->SMCR |= TIM_SMCR_SMS_2 | TIM_SMCR_SMS_1;    //trigger mode link timer1
     //TIM3->SMCR = 0x0000;    //
-    TIM3->CCMR1 = 0x6060;      //CH1, CH2 output PWM mode 1 (channel active TIM3->CNT < TIM3->CCR1)
-    TIM3->CCMR2 = 0x6060;      //CH3, CH4 output PWM mode 1 (channel active TIM3->CNT < TIM3->CCR1)
+    TIM3->CCMR1 = 0x6000;      //CH2 output PWM mode 1 (channel active TIM3->CNT < TIM3->CCR1)
+    TIM3->CCMR2 = 0x0060;      //CH3 output PWM mode 1 (channel active TIM3->CNT < TIM3->CCR1)
 
     // TIM3->CCMR1 = 0x0070;            //CH1 output PWM mode 2 (channel inactive TIM3->CNT < TIM3->CCR1)
     // TIM3->CCMR2 = 0x0000;            //
     //  TIM3->CCER |= TIM_CCER_CC1E | TIM_CCER_CC1P;    //CH1 enable on pin active high
-    TIM3->CCER = TIM_CCER_CC1E | TIM_CCER_CC2E | TIM_CCER_CC3E | TIM_CCER_CC4E;    //CH1-4 enable on pin active high
+    TIM3->CCER = TIM_CCER_CC2E | TIM_CCER_CC3E;    //CH2-3 enable on pin active high
     //TIM3->CCER |= TIM_CCER_CC2E | TIM_CCER_CC2P;    //CH2 enable on pin active high
     TIM3->ARR = DUTY_100_PERCENT;
     TIM3->CNT = 0;
     TIM3->PSC = 6;		//+1
     //TIM3->EGR = TIM_EGR_UG;    //generate event
 
-    //Configuracion Pines
-    //Alternate Fuction
-    //  temp = GPIOA->MODER;    //2 bits por pin
-    //  temp &= 0xFFFFCFFF;        //PA6 (alternative)
-    //  temp |= 0x00002000;
-    //  GPIOA->MODER = temp;
-
-    //Configuracion Pines LOW_LEFT HIGH_LEFT
+    //Configuracion Pines HIGH_LEFT
+    unsigned int temp = 0;
     temp = GPIOA->AFR[0];
-    temp &= 0x00FFFFFF;
-    temp |= 0x11000000;    //PA6 -> AF1, PA7 -> AF1;
+    temp &= 0x0FFFFFFF;
+    temp |= 0x10000000;    //PA7 -> AF1;
     GPIOA->AFR[0] = temp;
 
-    //Configuracion Pines LOW_RIGHT HIGH_RIGHT
+    //Configuracion Pines LOW_RIGHT
     temp = GPIOB->AFR[0];
-    temp &= 0xFFFFFF00;
-    temp |= 0x00000011;    //PB0 -> AF1, PB1 -> AF1;
+    temp &= 0xFFFFFFF0;
+    temp |= 0x00000001;    //PB0 -> AF1
     GPIOB->AFR[0] = temp;
 
     // Enable timer ver UDIS

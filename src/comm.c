@@ -4,7 +4,6 @@
 // ## @Author: Med
 // ## @Editor: Emacs - ggtags
 // ## @TAGS:   Global
-// ## @CPU:    STM32F030
 // ##
 // #### COMM.C ###################################
 //------------------------------------------------
@@ -12,7 +11,7 @@
 #include "signals.h"
 #include "usart.h"
 #include "hard.h"    //para conocer que hacer con el LED, y macros
-#include "stm32f0xx.h"
+// #include "stm32f0xx.h"
 
 #include "utils.h"
 
@@ -20,13 +19,13 @@
 #include <stdio.h>
 
 
-/* Externals variables ---------------------------------------------------------*/
+// Externals -------------------------------------------------------------------
 //--- del main
 extern const char s_ok [];
 //--- del Puerto serie  -------
 extern unsigned char usart1_have_data;
 
-/* Global variables ---------------------------------------------------------*/
+// Globals ---------------------------------------------------------------------
 char buffMessages [100];
 const char * p_own_channel;
 

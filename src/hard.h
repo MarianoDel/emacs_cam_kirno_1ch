@@ -77,6 +77,10 @@
 
 //-------- PWM Conf ------------------------
 
+//-------- Usart Conf ----------------------
+// #define USART_TX_OUTPUT_OPEN_DRAIN
+// #define USART_RX_PULLUP
+
 //-------- End Of Defines For Configuration ------
 
 //-------- Anouncemets ---------------------------
@@ -180,6 +184,16 @@ typedef enum
 #define LED_TREATMENT_STANDBY    1
 #define LED_TREATMENT_GENERATING    2
 #define LED_TREATMENT_JUMPER_PROTECTED    5
+
+
+#define LED_TOGGLE    do { \
+    if (LED) \
+        LED_OFF; \
+    else \
+        LED_ON; \
+    } while (0)
+
+
 
 //--- Stringtify Utils -----------------------
 #define STRING_CONCAT(str1,str2) #str1 " " #str2

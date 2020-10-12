@@ -34,7 +34,7 @@ void TF_Usart1_TxRx (void);
 void TF_Usart1_Adc (void);
 void TF_Usart1_Adc_Dma (void);
 
-void TF_Tim3_Pwm (void);
+void TF_Gpio_Int_Usart1 (void);
 
 #endif    /* _TEST_FUNTIONS_H_ */
 

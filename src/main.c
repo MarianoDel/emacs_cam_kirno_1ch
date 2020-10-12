@@ -32,6 +32,8 @@
 volatile unsigned short timer_signals = 0;
 volatile unsigned short timer_led = 0;
 
+// -- Externals de Tests  ------
+volatile unsigned char interrupt_getted = 0;    //only for tests
 
 // -- Externals del o para el ADC -------
 volatile unsigned short adc_ch[ADC_CHANNEL_QUANTITY];
@@ -103,11 +105,9 @@ int main(void)
 
     
     //--- Hard Test Functions ---//
-    TF_Led ();
+    // TF_Led ();
 
     // TF_Led_Blinking ();
-
-    // TF_Gpio_Input ();
 
     // TF_Buzzer ();
 
@@ -119,7 +119,7 @@ int main(void)
     
     // TF_Tim3_Ch2_Pwm ();
     
-    // TF_Tim3_Ch3_Pwm ();
+    TF_Tim3_Ch3_Pwm ();
 
     // TF_Usart1_Single ();
     
@@ -130,6 +130,8 @@ int main(void)
     // TF_Usart1_Adc ();
     
     // TF_Usart1_Adc_Dma ();
+
+    // TF_Gpio_Int_Usart1 ();
     
     //--- End of Hard Test Functions ---//
 
@@ -330,31 +332,14 @@ void TimingDelay_Decrement(void)
 
 }
 
+
 void EXTI2_3_IRQHandler(void)
 {
-
     if(EXTI->PR & 0x00000004)	//Line2
     {
-#ifndef INT_WITH_LED
-        //para pruebas
-        // if (LED)
-        // 	LED_OFF;
-        // else
-        LED_ON;
-#endif
-
-        // if (int_counter < 100)
-        // 	int_counter++;
-        // else
-        // {
-        // 	int_counter = 0;
-        // 	Usart1Send("100 ints\n");
-        // }
-
-
         Overcurrent_Shutdown();
-
         EXTI->PR |= 0x00000004;
+        interrupt_getted = 1;    //only for tests
     }
 }
 

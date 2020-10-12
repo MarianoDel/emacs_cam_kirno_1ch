@@ -58,10 +58,9 @@ void GPIO_Config (void)
     if (!GPIOA_CLK)
         GPIOA_CLK_ON;
 
-    temp = GPIOA->MODER;	//2 bits por pin
-    temp &= 0xFCC30F00;		//PA0 PA1 analog input; PA2 input; PA3 analog input; PA6 PA7 alternate function;
-    //PA9 PA10 alternative function; PA12 out
-    temp |= 0x0128A0CF;		//original
+    temp = GPIOA->MODER;       //2 bits por pin
+    temp &= 0x3CC33F00;        //PA0 out; PA1 analog; PA2 input; PA3 analog; PA7 alternate function
+    temp |= 0x012880CD;        //PA9 PA10 alternative; PA12 out; PA15 input
     GPIOA->MODER = temp;
 
     temp = GPIOA->OTYPER;	//1 bit por pin
@@ -74,27 +73,30 @@ void GPIO_Config (void)
 #endif
     GPIOA->OTYPER = temp;
 
-    temp = GPIOA->OSPEEDR;	//2 bits por pin
-    temp &= 0xFCC30FFF;		//PA6 PA7 PA9 PA10 PA12 low speed
+    temp = GPIOA->OSPEEDR;     //2 bits por pin
+    temp &= 0xFCF33FFC;        //PA0 PA7 PA9 PA12 low speed
     temp |= 0x00000000;
     GPIOA->OSPEEDR = temp;
 
-    temp = GPIOA->PUPDR;		//2 bits por pin
-    temp &= 0xFFFFFFFF;
-    temp |= 0x00000000;
+    temp = GPIOA->PUPDR;       //2 bits por pin
+#ifdef USART_RX_PULLUP    
+    temp &= 0x3FCFFFFF;        //PA15 PA10 pullup
+    temp |= 0x40100000;
+#else
+    temp &= 0x3FFFFFFF;        //PA15 pullup
+    temp |= 0x40000000;
+#endif
     GPIOA->PUPDR = temp;
 
-    //Alternate Fuction for GPIOA
-    // GPIOA->AFR[0] = 0x00001100;	//PA2 -> AF1; PA3 -> AF1;
-
+    
     //--- GPIO B ---//
 #ifdef GPIOB_ENABLE
     if (!GPIOB_CLK)
         GPIOB_CLK_ON;
 
-    temp = GPIOB->MODER;		//2 bits por pin
-    temp &= 0xFFFFCFF0;		//PB0 PB1 alternative; PB6 input
-    temp |= 0x0000000A;
+    temp = GPIOB->MODER;       //2 bits por pin
+    temp &= 0xFFFFCC3C;        //PB0 alternative; PB3 PB4 PB6 input
+    temp |= 0x00000002;
     GPIOB->MODER = temp;
 
     temp = GPIOB->OTYPER;	//1 bit por pin
@@ -102,18 +104,16 @@ void GPIO_Config (void)
     temp |= 0x00000000;
     GPIOB->OTYPER = temp;
 
-    temp = GPIOB->OSPEEDR;	//2 bits por pin
-    temp &= 0xFFFFFFF0;		//PB0 PB1 low speed
-    temp |= 0x00000000;		//low speed
+    temp = GPIOB->OSPEEDR;     //2 bits por pin
+    temp &= 0xFFFFFFFC;        //PB0 low speed
+    temp |= 0x00000000;
     GPIOB->OSPEEDR = temp;
 
-    temp = GPIOB->PUPDR;		//2 bits por pin
-    temp &= 0xFFFFCFFF;		//PB6 pull up
-    temp |= 0x00001000;
+    temp = GPIOB->PUPDR;       //2 bits por pin
+    temp &= 0xFFFFCC3F;        //PB3 PB4 PB6 pull up
+    temp |= 0x00001140;
     GPIOB->PUPDR = temp;
 
-    //Alternate Fuction for GPIOB
-    //GPIOB->AFR[0] = 0x00010000;	//PB4 -> AF1 enable pin on tim.c
 #endif
 
 #ifdef GPIOF_ENABLE

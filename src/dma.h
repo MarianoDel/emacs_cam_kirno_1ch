@@ -12,9 +12,9 @@
 // #define DMA_WITH_INTERRUPT
 
 //--- Exported types ---//
-#define RCC_DMA_CLK (RCC->AHBENR & RCC_AHBENR_DMAEN)
-#define RCC_DMA_CLK_ON 		RCC->AHBENR |= RCC_AHBENR_DMAEN
-#define RCC_DMA_CLK_OFF 	RCC->AHBENR &= ~RCC_AHBENR_DMAEN
+#define RCC_DMA_CLK    (RCC->AHBENR & RCC_AHBENR_DMAEN)
+#define RCC_DMA_CLK_ON    (RCC->AHBENR |= RCC_AHBENR_DMAEN)
+#define RCC_DMA_CLK_OFF    (RCC->AHBENR &= ~RCC_AHBENR_DMAEN)
 
 #define sequence_ready         (DMA1->ISR & DMA_ISR_TCIF1)
 #define sequence_ready_reset   (DMA1->IFCR = DMA_ISR_TCIF1)

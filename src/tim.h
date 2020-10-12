@@ -11,6 +11,8 @@
 
 // Exported Types Constants and Macros -----------------------------------------
 
+#define DUTY_NONE    0
+#define DUTY_10_PERCENT    100
 #define DUTY_50_PERCENT    500
 #define DUTY_95_PERCENT    950
 #define DUTY_100_PERCENT    1000
