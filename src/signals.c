@@ -236,8 +236,10 @@ void TreatmentManager (void)
             
             // char b [64];
             // sprintf(b, "thresh: %d\n", soft_overcurrent_threshold);
-            // Usart1Send(b);            
-#endif
+            // Usart1Send(b);
+            
+#endif    //USE_SOFT_OVERCURRENT
+            
 #ifdef USE_SOFT_NO_CURRENT
             current_integral_errors = 0;
 #endif
@@ -367,65 +369,18 @@ void TreatmentManager (void)
     
 }
 
-// void TreatmentManager_IntSpeed (void)
-// {
-//     switch (treatment_state)
-//     {
-//         case TREATMENT_INIT_FIRST_TIME:
-//             if (!timer_signals)
-//             {
-//                 HIGH_LEFT(0);
-//                 LOW_LEFT_PWM(0);
-//                 HIGH_RIGHT_PWM(0);
-//                 LOW_RIGHT(DUTY_ALWAYS);
-
-//                 if (GetErrorStatus() == ERROR_OK)
-//                 {
-//                     GenerateSignalReset();
-//                     treatment_state = TREATMENT_GENERATING;
-//                     LED_OFF;
-//                     EXTIOn();
-//                 }
-//             }
-//             break;
-
-//         case TREATMENT_GENERATING:
-//             //Cosas que dependen de las muestras
-//             //se la puede llamar las veces que sea necesario y entre funciones, para acelerar
-//             //la respuesta
-//             GenerateSignal();
-
-//             break;
-
-//         case TREATMENT_STOPPING2:		//aca lo manda directamente la int
-//             if (!timer_signals)
-//             {
-//                 treatment_state = TREATMENT_INIT_FIRST_TIME;
-//                 EXTIOff();
-//                 ENABLE_TIM3;
-// #ifdef LED_SHOW_INT
-//                 LED_OFF;
-// #endif
-//                 SetErrorStatus(ERROR_FLUSH_MASK);
-//                 timer_signals = 30;    //30ms mas de demora despues de int
-//             }
-//             break;
-
-//         default:
-//             treatment_state = TREATMENT_INIT_FIRST_TIME;
-//             break;
-//     }
-// }
 
 treatment_t GetTreatmentState (void)
 {
     return treatment_state;
 }
 
+
 gen_signal_state_t GetGenSignalState (void)
 {
     return gen_signal_state;
 }
+
 
 resp_t StartTreatment (void)
 {
@@ -440,11 +395,13 @@ resp_t StartTreatment (void)
     return resp_error;
 }
 
+
 void StopTreatment (void)
 {
     if (treatment_state != TREATMENT_STANDBY)
         treatment_state = TREATMENT_STOPPING;
 }
+
 
 error_t GetErrorStatus (void)
 {
@@ -462,6 +419,7 @@ error_t GetErrorStatus (void)
 	return error;
 }
 
+
 void SetErrorStatus (error_t e)
 {
     if (e == ERROR_FLUSH_MASK)
@@ -478,6 +436,7 @@ void SetErrorStatus (error_t e)
             global_error |= ERROR_NO_CURRENT_MASK;
     }
 }
+
 
 //recibe tipo de senial
 //setea senial y offset
@@ -540,33 +499,6 @@ resp_t SetSignalTypeAndOffset (signal_type_t a, signal_offset_t offset)
     return resp_ok;
 }
 
-//recibe referencia a la estructura de senial
-//recibe tipo de senial
-// resp_t SetSignalType (signals_struct_t * s, signal_type_t a)
-// {
-//     //TODO: despues cargar directamente los k
-//     if ((treatment_state != TREATMENT_INIT_FIRST_TIME) && (treatment_state != TREATMENT_STANDBY))
-//         return resp_error;
-
-//     if (a == SQUARE_SIGNAL)
-//         p_signal = (unsigned short *) s_cuadrada_1_5A;
-
-// #if (defined USE_PROTECTION_WITH_INT) && (defined INT_SPEED_RESPONSE)
-//     if (a == TRIANGULAR_SIGNAL)
-//         p_signal = (unsigned short *) s_triangular_6A;
-// #else
-//     if (a == TRIANGULAR_SIGNAL)
-//         p_signal = (unsigned short *) s_triangular_1_5A;    
-// #endif
-
-//     if (a == SINUSOIDAL_SIGNAL)
-//         p_signal = (unsigned short *) s_senoidal_1_5A;
-
-//     // signal_to_gen.signal = a;
-//     s->signal = a;
-
-//     return resp_ok;
-// }
 
 //setea la frecuencia y el timer con el que se muestrea
 //por default o error es simepre de 1500Hz -> seniales de 10Hz
@@ -587,6 +519,7 @@ resp_t SetFrequency (unsigned char entero, unsigned char decimal)
     return resp_ok;
 }
 
+
 resp_t SetPower (unsigned char a)
 {
     if ((treatment_state != TREATMENT_INIT_FIRST_TIME) && (treatment_state != TREATMENT_STANDBY))
@@ -601,6 +534,7 @@ resp_t SetPower (unsigned char a)
 
     return resp_ok;
 }
+
 
 //verifica que se cumplan con todos los parametros para poder enviar una senial coherente
 resp_t AssertTreatmentParams (void)
@@ -627,6 +561,7 @@ resp_t AssertTreatmentParams (void)
     //TODO: revisar tambien puntero  senial!!!!
     return resp_ok;
 }
+
 
 void SendAllConf (void)
 {
@@ -699,6 +634,7 @@ void SendAllConf (void)
     sprintf(b, "power: %d\n\n", signal_to_gen.power);
     Usart1Send(b);
 }
+
 
 //reset a antes de la generacion de seniales
 void GenerateSignalReset (void)
@@ -826,7 +762,8 @@ void Signal_Generate_Phase_0_90_120 (void)
     }
     
 }
-    
+
+
 // Senial especial de 180 grados de defasaje, en la que el synchro
 // justo cuando estoy terminando de dibujar la senial o apenas terminado
 void Signal_Generate_Phase_180 (void)
@@ -937,6 +874,7 @@ void Signal_Generate_Phase_180 (void)
     }
 
 }
+
 
 // Senial especial, defasaje 240 grados, el synchro llega justo cuando estoy dibujando la senial
 // de todas formas espero el primer sync para arrancar
@@ -1056,6 +994,7 @@ void Signal_Generate_Phase_240 (void)
     
 }
 
+
 typedef enum {
 	NORMAL_DISCHARGE = 0,
 	TAU_DISCHARGE,
@@ -1064,6 +1003,7 @@ typedef enum {
 } drawing_state_t;
 
 drawing_state_t drawing_state = NORMAL_DISCHARGE;
+
 
 void Signal_DrawingReset (void)
 {
@@ -1074,6 +1014,7 @@ void Signal_DrawingReset (void)
 
     Signal_UpdatePointerReset();
 }
+
 
 //llamar para cada punto a dibujar
 //calculo PID con puntero anterior y actualizo el puntero
@@ -1175,10 +1116,12 @@ resp_t Signal_Drawing (void)
     return resp;
 }
 
+
 inline void Signal_UpdatePointerReset (void)
 {
     p_signal_running = p_signal;
 }
+
 
 resp_t Signal_UpdatePointer (void)
 {
@@ -1198,6 +1141,7 @@ resp_t Signal_UpdatePointer (void)
 
     return resp;
 }
+
 
 //calculo el offset de la senial, T1 y el sampling
 //el sampling lo seteo en el timer TIM1
@@ -1251,6 +1195,7 @@ void Signal_OffsetCalculate (void)
     signal_to_gen.t1 = (unsigned short) offset;
     
 }
+
 
 //hubo sobrecorriente, me llaman desde la interrupcion
 void Overcurrent_Shutdown (void)

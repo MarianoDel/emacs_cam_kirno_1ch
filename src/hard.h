@@ -26,7 +26,7 @@
 
 //-------- Type of Program ----------------
 #define SYSTEM_AUTONOMOUS
-#define SYSTEM_WITH_MANAGEMENT
+// #define SYSTEM_WITH_MANAGEMENT
 
 
 //-------- Type of Program and Features ----------------
@@ -39,9 +39,12 @@
 //Si utiliza la proteccion de no current
 #define USE_SOFT_NO_CURRENT
 
+//El synchro viene por puerto serie o lo genero internamente
+// #define SYNC_EXTERNAL_OVER_USART
+#define SYNC_INTERNAL_IN_TIM1
 
 //el LED lo uso para debug de varios procesos, ver mas abajo cuales
-// #define USE_LED_FOR_DEBUG
+#define USE_LED_FOR_DEBUG
 
 //-------- Kind of Reports Sended ----------------
 
@@ -67,10 +70,11 @@
 
 #ifdef USE_LED_FOR_DEBUG
 // #define LED_SHOW_SEQUENCE
-// #define LED_SHOW_MSGS
+#define LED_SHOW_MSGS
 // #define LED_SHOW_INT
 // #define LED_SHOW_SYNC_UART
-#define LED_SHOW_SYNC_SIGNAL
+// #define LED_SHOW_SYNC_SIGNAL
+// #define LED_SHOW_SYNC_SIGNAL_ON_TIM1
 #endif
 
 //-------- Hysteresis Conf ------------------------
@@ -194,6 +198,29 @@ typedef enum
     } while (0)
 
 
+typedef enum {
+    SW_NO = 0,
+    SW_MIN,
+    SW_HALF,
+    SW_FULL
+    
+} resp_sw_t;
+
+// Buzzer Commands
+#define BUZZER_STOP_CMD        0
+#define BUZZER_LONG_CMD        1
+#define BUZZER_HALF_CMD        2
+#define BUZZER_SHORT_CMD        3
+#define BUZZER_MULTI_CMD        4
+
+// Buzzer Timeouts
+#define TT_BUZZER_BIP_SHORT		300
+#define TT_BUZZER_BIP_SHORT_WAIT	500
+#define TT_BUZZER_BIP_HALF		600
+#define TT_BUZZER_BIP_HALF_WAIT    	800
+#define TT_BUZZER_BIP_LONG		2000
+#define TT_BUZZER_BIP_LONG_WAIT        2000
+
 
 //--- Stringtify Utils -----------------------
 #define STRING_CONCAT(str1,str2) #str1 " " #str2
@@ -206,6 +233,10 @@ void ChangeLed (unsigned char);
 void UpdateLed (void);
 void WelcomeCode (void);
 
+void UpdateBuzzer (void);
+void UpdateSwitches (void);
+void BuzzerCommands(unsigned char, unsigned char);
+resp_sw_t CheckS1 (void);
 
 #endif /* _HARD_H_ */
 

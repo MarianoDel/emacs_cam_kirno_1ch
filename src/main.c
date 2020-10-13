@@ -32,6 +32,9 @@
 volatile unsigned short timer_signals = 0;
 volatile unsigned short timer_led = 0;
 
+// -- Externals para synchro en Usart o Tim1  ------
+volatile unsigned char sync_on_signal = 0;
+
 // -- Externals de Tests  ------
 volatile unsigned char interrupt_getted = 0;    //only for tests
 
@@ -44,19 +47,11 @@ unsigned short pid_param_p = 0;
 unsigned short pid_param_i = 0;
 unsigned short pid_param_d = 0;
 
-// ------- Externals para filtros -------
-unsigned short mains_voltage_filtered;
-//
-//
-// volatile unsigned short scroll1_timer = 0;
-// volatile unsigned short scroll2_timer = 0;
-//
-// volatile unsigned short standalone_timer;
-// volatile unsigned short standalone_enable_menu_timer;
-// //volatile unsigned short standalone_menu_timer;
-// volatile unsigned char grouped_master_timeout_timer;
-volatile unsigned short take_temp_sample = 0;
 
+#ifdef SYSTEM_AUTONOMOUS
+volatile unsigned short buzzer_timeout = 0;
+volatile unsigned char switches_timeout = 0;
+#endif 
 
 // parameters_typedef param_struct;
 
@@ -66,16 +61,8 @@ volatile unsigned char int_counter = 0;
 // ------- de los timers -------
 volatile unsigned short wait_ms_var = 0;
 volatile unsigned short timer_standby;
-//volatile unsigned char display_timer;
-volatile unsigned char timer_meas;
-
-volatile unsigned char door_filter;
-volatile unsigned char take_sample;
-volatile unsigned char move_relay;
-
 
 volatile unsigned short secs = 0;
-volatile unsigned char hours = 0;
 volatile unsigned char minutes = 0;
 
 
@@ -157,18 +144,120 @@ int main(void)
 
     //--- Welcome code ---//
     WelcomeCode();
+    Wait_ms(100);
+    SetOwnChannel(1);
+    Usart1Send("\nOwn Channel ch1\n");
+    Wait_ms(100);
     Usart1Send("\r\nStarting Main Program...\r\n");
-    while(1);
+
+#ifdef SYSTEM_AUTONOMOUS
+    unsigned char button_state = 0;
+    error_t errors = ERROR_OK;
+    // char buff [100] = { 0 };
     
-#ifdef ONLY_POWER_WITHOUT_MANAGEMENT
     while (1)
     {
-        //Cosas que dependen de las muestras
-        GenerateSignal();
+        //este es el programa principal, maneja a GenerateSignal()
+        TreatmentManager ();
+
+        //Cosas que no dependen del estado del programa
+        UpdateCommunications();
+
+        UpdateLed();
+        UpdateBuzzer();
+        UpdateSwitches();
+
+        //Manejar TreatmentManager con el boton
+        switch (button_state)
+        {
+        case 0:
+            //comienzo el programa
+            BuzzerCommands(BUZZER_SHORT_CMD, 2);
+            Usart1Send("Main Standby!\n");
+            button_state++;
+            break;
+
+        case 1:
+            //comienzo tratamiento?
+            if (CheckS1() > SW_MIN)
+            {
+                BuzzerCommands(BUZZER_HALF_CMD, 1);
+                SetSignalTypeAndOffset (SINUSOIDAL_SIGNAL, ZERO_DEG_OFFSET);
+                SetFrequency (10, 00);
+                SetPower (100);
+                
+                button_state++;
+            }
+            break;
+
+        case 2:
+            if (CheckS1() == SW_NO)
+            {
+                //comenzar tratamiento ahora
+                Usart1Send("Comenzar tratamiento ahora!\n");
+                // SetSignalTypeAndOffset (SINUSOIDAL_SIGNAL, ZERO_DEG_OFFSET);
+                // SetFrequency (10, 00);
+                // SetPower (100);
+                
+                minutes = 30;
+                if (StartTreatment() == resp_ok)
+                    button_state++;
+                else
+                {
+                    button_state = 1;
+                    BuzzerCommands(BUZZER_LONG_CMD, 1);
+                    Usart1Send("Errores al querer comenzar tratamiento\n");
+                }
+            }
+            break;
+            
+        case 3:
+            //generando reviso si termina o me piden que corte
+            //cortar generacion
+            if (CheckS1() > SW_NO)
+            {
+                BuzzerCommands(BUZZER_SHORT_CMD, 3);
+                StopTreatment();
+                button_state++;
+            }
+
+            //termino el tiempo del tratamiento
+            if (!minutes)
+            {
+                Usart1Send("Termino tratamiento por tiempo\n");
+                BuzzerCommands(BUZZER_SHORT_CMD, 3);
+                StopTreatment();                
+                button_state = 1;
+            }
+
+            errors = GetErrorStatus();
+            if (errors != ERROR_OK)
+            {
+                char buff [100] = { 0 };
+                sprintf (buff, "treat err, ch1: 0x%04x\r\n", errors);
+                Usart1Send(buff);
+                BuzzerCommands(BUZZER_LONG_CMD, 1);
+                button_state = 1;
+            }
+            break;
+            
+        case 4:
+            //termino tratamiento
+            if (CheckS1() == SW_NO)
+            {
+                Usart1Send("Termino tratamiento por el usuario\n");
+                button_state = 1;
+            }
+            break;
+                
+        default:
+            button_state = 0;
+            break;
+        }
     }
 #endif
 
-#ifdef POWER_WITH_MANAGEMENT
+#ifdef SYSTEM_WITH_MANAGEMENT
     while (1)
     {
         //este es el programa principal, maneja a GenerateSignal()
@@ -181,7 +270,7 @@ int main(void)
 
     }
 #endif
-
+    
     return 0;
 }
 //--- End of Main ---//
@@ -196,32 +285,30 @@ void TimingDelay_Decrement(void)
     if (timer_standby)
         timer_standby--;
 
-    if (take_temp_sample)
-        take_temp_sample--;
-
-    if (timer_meas)
-        timer_meas--;
-
     if (timer_signals)
         timer_signals--;
 
     if (timer_led)
         timer_led--;
-    // //cuenta de a 1 minuto
-    // if (secs > 59999)	//pasaron 1 min
-    // {
-    // 	minutes++;
-    // 	secs = 0;
-    // }
-    // else
-    // 	secs++;
-    //
-    // if (minutes > 60)
-    // {
-    // 	hours++;
-    // 	minutes = 0;
-    // }
+    
+#ifdef SYSTEM_AUTONOMOUS
+    if (secs > 59999)
+    {
+        if (minutes)
+            minutes--;
 
+        secs = 0;
+    }
+    else
+        secs++;
+    
+    if (buzzer_timeout)
+        buzzer_timeout--;
+
+    if (switches_timeout)
+        switches_timeout--;
+        
+#endif
 
 }
 

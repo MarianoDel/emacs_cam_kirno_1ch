@@ -11,26 +11,21 @@
 #include "hard.h"
 
 
-//--- VARIABLES EXTERNAS ---//
+// Externals -------------------------------------------------------------------
 extern volatile unsigned char timer_1seg;
 extern volatile unsigned short timer_led_comm;
 extern volatile unsigned short wait_ms_var;
+extern volatile unsigned char sync_on_signal;
 
 
-//--- VARIABLES GLOBALES ---//
-
+// Globals ---------------------------------------------------------------------
 volatile unsigned short timer_1000 = 0;
 
 
+// Module Private Functions ----------------------------------------------------
 
-//--- FUNCIONES DEL MODULO ---//
-void UpdateTIMSync (unsigned short a)
-{
-    //primero cargo TIM1
-    TIM1->CCR1 = a;
-    TIM3->ARR = DUTY_50_PERCENT + a;    //TIM3->CCR1 es el delay entre timers
-}
 
+// Module Functions ------------------------------------------------------------
 void Update_TIM3_CH1 (unsigned short a)
 {
 	TIM3->CCR1 = a;
@@ -110,13 +105,39 @@ void TIM_1_Init (void)
     // temp |= 0x00000002;    //PA8 -> AF2
     // GPIOA->AFR[1] = temp;
 
-    // Enable timer ver UDIS
-    //TIM1->DIER |= TIM_DIER_UIE;
+    // Timer Enable and Interruptss
+#ifdef SYNC_INTERNAL_IN_TIM1
+    TIM1->DIER |= TIM_DIER_UIE;
+    NVIC_EnableIRQ(TIM1_BRK_UP_TRG_COM_IRQn);
+    NVIC_SetPriority(TIM1_BRK_UP_TRG_COM_IRQn, 8);
+#endif
     TIM1->CR1 |= TIM_CR1_CEN;
 
     TIM1->CCR1 = 0;
 }
 
+
+#ifdef SYNC_INTERNAL_IN_TIM1
+volatile unsigned char tim1_ticks_cntr = 0;
+void TIM1_BRK_UP_TRG_COM_IRQHandler (void)
+{
+    if (tim1_ticks_cntr)
+        tim1_ticks_cntr--;
+    else
+    {
+        tim1_ticks_cntr = 199;
+        sync_on_signal = 1;
+    }
+
+#ifdef LED_SHOW_SYNC_SIGNAL_ON_TIM1
+    LED_TOGGLE;
+#endif
+    //bajar flag
+    if (TIM1->SR & 0x01)	//bajo el flag
+        TIM1->SR = 0x00;
+
+}
+#endif
 
 void TIM_3_Init (void)			//quiero algo alrededor de los 7KHz
 {

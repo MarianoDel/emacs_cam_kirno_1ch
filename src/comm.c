@@ -11,7 +11,7 @@
 #include "signals.h"
 #include "usart.h"
 #include "hard.h"    //para conocer que hacer con el LED, y macros
-// #include "stm32f0xx.h"
+#include "stm32f0xx.h"    //para poder meter LED
 
 #include "utils.h"
 

@@ -30,8 +30,24 @@ typedef enum
 #define TT_LED_IN_ON_OFF    200
 #define TT_LED_WAIT_IN_OFF    2000
 
+// Buzzer Bips States
+typedef enum
+{    
+    BUZZER_WAIT_COMMANDS = 0,
+    BUZZER_MARK,
+    BUZZER_SPACE,
+    BUZZER_TO_STOP
+    
+} buzzer_state_t;
+
+
 // Externals -------------------------------------------------------------------
 extern volatile unsigned short timer_led;
+
+#ifdef SYSTEM_AUTONOMOUS
+extern volatile unsigned short buzzer_timeout;
+extern volatile unsigned char switches_timeout;
+#endif 
 
 
 // Globals ---------------------------------------------------------------------
@@ -161,7 +177,136 @@ void WelcomeCode (void)
     Usart1Send(str);
     Wait_ms(40);
 #endif
+
+#ifdef SYNC_EXTERNAL_OVER_USART
+    sprintf(str,"[%s] %s\n", __FILE__, str_macro(SYNC_EXTERNAL_OVER_USART));
+    Usart1Send(str);
+    Wait_ms(40);
+#endif
+    
+#ifdef SYNC_INTERNAL_IN_TIM1
+    sprintf(str,"[%s] %s\n", __FILE__, str_macro(SYNC_INTERNAL_IN_TIM1));
+    Usart1Send(str);
+    Wait_ms(40);
+#endif
+    
     
 }
+
+#ifdef SYSTEM_AUTONOMOUS
+// for the buzzer
+buzzer_state_t buzzer_state = BUZZER_WAIT_COMMANDS;
+unsigned char buzzer_multiple = 0;
+unsigned short buzzer_timer_reload_mark = 0;
+unsigned short buzzer_timer_reload_space = 0;
+
+void BuzzerCommands(unsigned char command, unsigned char multiple)
+{
+    if (command == BUZZER_STOP_CMD)
+        buzzer_state = BUZZER_TO_STOP;
+    else
+    {
+        if (command == BUZZER_LONG_CMD)
+        {
+            buzzer_timer_reload_mark = TT_BUZZER_BIP_LONG;
+            buzzer_timer_reload_space = TT_BUZZER_BIP_LONG_WAIT;
+        }
+        else if (command == BUZZER_HALF_CMD)
+        {
+            buzzer_timer_reload_mark = TT_BUZZER_BIP_HALF;
+            buzzer_timer_reload_space = TT_BUZZER_BIP_HALF_WAIT;
+        }
+        else
+        {
+            buzzer_timer_reload_mark = TT_BUZZER_BIP_SHORT;
+            buzzer_timer_reload_space = TT_BUZZER_BIP_SHORT_WAIT;
+        }
+
+        buzzer_state = BUZZER_MARK;
+        buzzer_timeout = 0;
+        buzzer_multiple = multiple;
+    }
+}
+
+
+void UpdateBuzzer (void)
+{
+    switch (buzzer_state)
+    {
+        case BUZZER_WAIT_COMMANDS:
+            break;
+
+        case BUZZER_MARK:
+            if (!buzzer_timeout)
+            {
+                BUZZER_ON;
+                buzzer_state++;
+                buzzer_timeout = buzzer_timer_reload_mark;
+            }
+            break;
+
+        case BUZZER_SPACE:
+            if (!buzzer_timeout)
+            {
+                if (buzzer_multiple > 1)
+                {
+                    buzzer_multiple--;
+                    BUZZER_OFF;
+                    buzzer_state = BUZZER_MARK;
+                    buzzer_timeout = buzzer_timer_reload_space;
+                }
+                else
+                    buzzer_state = BUZZER_TO_STOP;
+            }
+            break;
+
+        case BUZZER_TO_STOP:
+        default:
+            BUZZER_OFF;
+            buzzer_state = BUZZER_WAIT_COMMANDS;
+            break;
+    }
+}
+
+
+#define SWITCHES_TIMER_RELOAD    5
+#define SWITCHES_THRESHOLD_FULL	1000		//5 segundos
+#define SWITCHES_THRESHOLD_HALF	100		//1 segundo
+#define SWITCHES_THRESHOLD_MIN	5		//25 ms
+
+unsigned short s1 = 0;
+resp_sw_t CheckS1 (void)	//cada check tiene SWITCHES_TIMER_RELOAD ms
+{
+    if (s1 > SWITCHES_THRESHOLD_FULL)
+        return SW_FULL;
+
+    if (s1 > SWITCHES_THRESHOLD_HALF)
+        return SW_HALF;
+
+    if (s1 > SWITCHES_THRESHOLD_MIN)
+        return SW_MIN;
+
+    return SW_NO;
+}
+
+#define S1_PIN    ON_TREATMENT
+void UpdateSwitches (void)
+{
+    //revisa los switches cada 10ms
+    if (!switches_timeout)
+    {
+        if (S1_PIN)
+            s1++;
+        else if (s1 > 50)
+            s1 -= 50;
+        else if (s1 > 10)
+            s1 -= 5;
+        else if (s1)
+            s1--;
+        
+        switches_timeout = SWITCHES_TIMER_RELOAD;
+    }
+}
+#endif    //SYSTEM_AUTONOMOUS
 
 //--- end of file ---//

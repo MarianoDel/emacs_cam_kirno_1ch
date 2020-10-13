@@ -20,7 +20,7 @@
 
 
 // Externals -------------------------------------------------------------------
-
+extern volatile unsigned char sync_on_signal;    //por ahora lo quite de aca
 
 // Globals ---------------------------------------------------------------------
 volatile unsigned char * ptx1;

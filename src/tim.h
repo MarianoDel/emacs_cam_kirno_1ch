@@ -56,7 +56,6 @@
 #define RCC_TIM17_CLK_OFF    (RCC->APB2ENR &= ~0x00040000)
 
 //--- Exported functions ---//
-void UpdateTIMSync (unsigned short);
 void TIM_1_Init(void);
 void Update_TIM1_CH1 (unsigned short);
 void TIM3_IRQHandler (void);
