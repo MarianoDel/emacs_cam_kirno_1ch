@@ -174,6 +174,9 @@ int main(void)
             //comienzo el programa
             BuzzerCommands(BUZZER_SHORT_CMD, 2);
             Usart1Send("Main Standby!\n");
+#ifdef USE_LED_IN_SYSTEM_AUTONOMOUS
+            ChangeLed(LED_TREATMENT_STANDBY);
+#endif
             button_state++;
             break;
 
@@ -198,7 +201,9 @@ int main(void)
                 // SetSignalTypeAndOffset (SINUSOIDAL_SIGNAL, ZERO_DEG_OFFSET);
                 // SetFrequency (10, 00);
                 // SetPower (100);
-                
+#ifdef USE_LED_IN_SYSTEM_AUTONOMOUS
+                ChangeLed(LED_TREATMENT_GENERATING);
+#endif
                 minutes = 30;
                 if (StartTreatment() == resp_ok)
                     button_state++;
@@ -226,7 +231,10 @@ int main(void)
             {
                 Usart1Send("Termino tratamiento por tiempo\n");
                 BuzzerCommands(BUZZER_SHORT_CMD, 3);
-                StopTreatment();                
+                StopTreatment();
+#ifdef USE_LED_IN_SYSTEM_AUTONOMOUS
+                ChangeLed(LED_TREATMENT_STANDBY);
+#endif
                 button_state = 1;
             }
 
@@ -237,6 +245,9 @@ int main(void)
                 sprintf (buff, "treat err, ch1: 0x%04x\r\n", errors);
                 Usart1Send(buff);
                 BuzzerCommands(BUZZER_LONG_CMD, 1);
+#ifdef USE_LED_IN_SYSTEM_AUTONOMOUS
+                ChangeLed(LED_TREATMENT_JUMPER_PROTECTED);
+#endif
                 button_state = 1;
             }
             break;
@@ -246,6 +257,9 @@ int main(void)
             if (CheckS1() == SW_NO)
             {
                 Usart1Send("Termino tratamiento por el usuario\n");
+#ifdef USE_LED_IN_SYSTEM_AUTONOMOUS
+                ChangeLed(LED_TREATMENT_STANDBY);
+#endif
                 button_state = 1;
             }
             break;

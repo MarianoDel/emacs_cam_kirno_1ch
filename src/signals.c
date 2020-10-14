@@ -203,7 +203,9 @@ void TreatmentManager (void)
         if (AssertTreatmentParams() == resp_ok)
         {
             treatment_state = TREATMENT_STANDBY;
+#ifdef USE_LED_IN_TREATMENT_MANAGER
             ChangeLed(LED_TREATMENT_STANDBY);
+#endif
         }
         break;
 
@@ -245,7 +247,9 @@ void TreatmentManager (void)
 #endif
             EXTIOn();
             treatment_state = TREATMENT_GENERATING;
+#ifdef USE_LED_IN_TREATMENT_MANAGER            
             ChangeLed(LED_TREATMENT_GENERATING);
+#endif
         }
         else
         {
@@ -364,7 +368,9 @@ void TreatmentManager (void)
         SIGNAL_PWM_NORMAL_DISCHARGE;
         timer_signals = 1000;
         treatment_state = TREATMENT_JUMPER_PROTECTED;
+#ifdef USE_LED_IN_TREATMENT_MANAGER
         ChangeLed(LED_TREATMENT_JUMPER_PROTECTED);
+#endif
     }
     
 }

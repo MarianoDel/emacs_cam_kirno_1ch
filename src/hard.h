@@ -44,7 +44,9 @@
 #define SYNC_INTERNAL_IN_TIM1
 
 //el LED lo uso para debug de varios procesos, ver mas abajo cuales
-#define USE_LED_FOR_DEBUG
+// #define USE_LED_FOR_DEBUG
+// #define USE_LED_IN_TREATMENT_MANAGER
+#define USE_LED_IN_SYSTEM_AUTONOMOUS
 
 //-------- Kind of Reports Sended ----------------
 
