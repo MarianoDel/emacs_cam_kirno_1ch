@@ -35,6 +35,7 @@
 #define AUTONOMOUS_SIGNAL    SINUSOIDAL_SIGNAL
 // #define AUTONOMOUS_SIGNAL    SQUARE_SIGNAL
 // #define AUTONOMOUS_SIGNAL    TRIANGULAR_SIGNAL
+#define AUTONOMOUS_TIME    15
 #endif
 //-------- Type of Program and Features ----------------
 //Si utiliza la proteccion con la int para cortar la corriente

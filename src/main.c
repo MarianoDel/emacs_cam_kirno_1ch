@@ -204,7 +204,7 @@ int main(void)
 #ifdef USE_LED_IN_SYSTEM_AUTONOMOUS
                 ChangeLed(LED_TREATMENT_GENERATING);
 #endif
-                minutes = 30;
+                minutes = AUTONOMOUS_TIME;
                 if (StartTreatment() == resp_ok)
                     button_state++;
                 else
