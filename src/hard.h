@@ -28,7 +28,14 @@
 #define SYSTEM_AUTONOMOUS
 // #define SYSTEM_WITH_MANAGEMENT
 
-
+#ifdef SYSTEM_AUTONOMOUS
+#define AUTONOMOUS_POWER    50
+#define AUTONOMOUS_FREQ_INT    10
+#define AUTONOMOUS_FREQ_DEC    0
+#define AUTONOMOUS_SIGNAL    SINUSOIDAL_SIGNAL
+// #define AUTONOMOUS_SIGNAL    SQUARE_SIGNAL
+// #define AUTONOMOUS_SIGNAL    TRIANGULAR_SIGNAL
+#endif
 //-------- Type of Program and Features ----------------
 //Si utiliza la proteccion con la int para cortar la corriente
 #define USE_PROTECTION_WITH_INT

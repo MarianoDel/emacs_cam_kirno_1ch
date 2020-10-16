@@ -185,9 +185,9 @@ int main(void)
             if (CheckS1() > SW_MIN)
             {
                 BuzzerCommands(BUZZER_HALF_CMD, 1);
-                SetSignalTypeAndOffset (SINUSOIDAL_SIGNAL, ZERO_DEG_OFFSET);
-                SetFrequency (10, 00);
-                SetPower (100);
+                SetSignalTypeAndOffset (AUTONOMOUS_SIGNAL, ZERO_DEG_OFFSET);
+                SetFrequency (AUTONOMOUS_FREQ_INT, AUTONOMOUS_FREQ_DEC);
+                SetPower (AUTONOMOUS_POWER);
                 
                 button_state++;
             }
