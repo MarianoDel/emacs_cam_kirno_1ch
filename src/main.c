@@ -229,6 +229,13 @@ int main(void)
             //termino el tiempo del tratamiento
             if (!minutes)
             {
+#ifdef USE_TREATMENT_COMBINED
+                Usart1Send("Termino etapa por tiempo\n");
+                BuzzerCommands(BUZZER_SHORT_CMD, 1);
+                StopTreatment();
+                timer_standby = 2000;
+                button_state = 5;
+#else
                 Usart1Send("Termino tratamiento por tiempo\n");
                 BuzzerCommands(BUZZER_SHORT_CMD, 3);
                 StopTreatment();
@@ -236,6 +243,7 @@ int main(void)
                 ChangeLed(LED_TREATMENT_STANDBY);
 #endif
                 button_state = 1;
+#endif
             }
 
             errors = GetErrorStatus();
@@ -263,7 +271,64 @@ int main(void)
                 button_state = 1;
             }
             break;
+
+        case 5:    // change treatment on the fly
+            //termino tratamiento
+            if (!timer_standby)
+            {
+                BuzzerCommands(BUZZER_HALF_CMD, 1);
+                SetSignalTypeAndOffset (AUTONOMOUS_SIGNAL_COMBINED, ZERO_DEG_OFFSET);
+                SetFrequency (AUTONOMOUS_FREQ_INT_COMBINED, AUTONOMOUS_FREQ_DEC_COMBINED);
+                SetPower (AUTONOMOUS_POWER_COMBINED);                
+                minutes = AUTONOMOUS_TIME_COMBINED;
                 
+                if (StartTreatment() == resp_ok)
+                    button_state = 6;
+                else
+                {
+                    button_state = 1;
+                    BuzzerCommands(BUZZER_LONG_CMD, 1);
+                    Usart1Send("Errores al querer comenzar tratamiento\n");
+                }
+            }
+            break;
+
+        case 6:
+            //generando reviso si termina o me piden que corte
+            //cortar generacion
+            if (CheckS1() > SW_NO)
+            {
+                BuzzerCommands(BUZZER_SHORT_CMD, 3);
+                StopTreatment();
+                button_state++;
+            }
+
+            //termino el tiempo del tratamiento
+            if (!minutes)
+            {
+                Usart1Send("Termino tratamiento por tiempo\n");
+                BuzzerCommands(BUZZER_SHORT_CMD, 3);
+                StopTreatment();
+#ifdef USE_LED_IN_SYSTEM_AUTONOMOUS
+                ChangeLed(LED_TREATMENT_STANDBY);
+#endif
+                button_state = 1;
+            }
+
+            errors = GetErrorStatus();
+            if (errors != ERROR_OK)
+            {
+                char buff [100] = { 0 };
+                sprintf (buff, "treat err, ch1: 0x%04x\r\n", errors);
+                Usart1Send(buff);
+                BuzzerCommands(BUZZER_LONG_CMD, 1);
+#ifdef USE_LED_IN_SYSTEM_AUTONOMOUS
+                ChangeLed(LED_TREATMENT_JUMPER_PROTECTED);
+#endif
+                button_state = 1;
+            }
+            break;
+            
         default:
             button_state = 0;
             break;

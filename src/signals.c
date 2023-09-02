@@ -73,18 +73,44 @@ unsigned char current_integral_errors = 0;
 
 //parametros del PID segun las seniales (es el valor elegido dividido 128)
 //PID nuevos
-#define PID_SQUARE_P    224
-#define PID_SQUARE_I    256
+// #define PID_SQUARE_P    224
+// #define PID_SQUARE_I    256
+// #define PID_SQUARE_D    0
+
+// #define PID_TRIANGULAR_P    224
+// #define PID_TRIANGULAR_I    256
+// #define PID_TRIANGULAR_D    0
+
+// #define PID_SINUSOIDAL_P    525
+// #define PID_SINUSOIDAL_I    256
+// #define PID_SINUSOIDAL_D    0
+
+// para Ra = 30ohms La = 0.23Hy
+// #define PID_SQUARE_P    128
+// #define PID_SQUARE_I    3
+// #define PID_SQUARE_D    0
+
+// #define PID_TRIANGULAR_P    128
+// #define PID_TRIANGULAR_I    3
+// #define PID_TRIANGULAR_D    0
+
+// #define PID_SINUSOIDAL_P    128
+// #define PID_SINUSOIDAL_I    3
+// #define PID_SINUSOIDAL_D    0
+
+// para Ra = 30ohms La = 0.23Hy otro juego
+#define PID_SQUARE_P    256
+#define PID_SQUARE_I    6
 #define PID_SQUARE_D    0
 
-#define PID_TRIANGULAR_P    224
-#define PID_TRIANGULAR_I    256
+#define PID_TRIANGULAR_P    256
+#define PID_TRIANGULAR_I    6
 #define PID_TRIANGULAR_D    0
 
-// #define PID_SINUSOIDAL_P    224
-#define PID_SINUSOIDAL_P    525
-#define PID_SINUSOIDAL_I    256
+#define PID_SINUSOIDAL_P    256
+#define PID_SINUSOIDAL_I    6
 #define PID_SINUSOIDAL_D    0
+
 
 //PID original
 // #define PID_SQUARE_P    640
@@ -98,6 +124,49 @@ unsigned char current_integral_errors = 0;
 // #define PID_SINUSOIDAL_P    640
 // #define PID_SINUSOIDAL_I    16
 // #define PID_SINUSOIDAL_D    0
+
+// Sensed over 0.33 // 0.33 -> opamp x 3.2 -> adc on 1023pts ---> each amp 163
+
+#ifdef MAX_CURRENT_2_5_A
+//Signals Templates
+#define I_MAX 408
+
+//seniales nuevas
+const unsigned short s_sinusoidal_3A [SIZEOF_SIGNALS] = {12,25,38,51,63,76,89,101,113,126,
+                                                         138,150,162,173,185,196,207,218,229,239,
+                                                         250,260,269,279,288,297,306,314,322,330,
+                                                         337,344,351,357,363,369,374,379,383,388,
+                                                         391,395,398,400,402,404,406,407,407,408,
+                                                         407,407,406,404,402,400,398,395,391,388,
+                                                         383,379,374,369,363,357,351,344,337,330,
+                                                         322,314,306,297,288,279,269,260,250,239,
+                                                         229,218,207,196,185,173,162,150,138,126,
+                                                         113,101,89,76,63,51,38,25,12,0};
+
+const unsigned short s_triangular_3A [SIZEOF_SIGNALS] = {0,4,8,12,16,20,24,28,32,36,
+                                                         40,44,48,53,57,61,65,69,73,77,
+                                                         81,85,89,93,97,102,106,110,114,118,
+                                                         122,126,130,134,138,142,146,150,155,159,
+                                                         163,167,171,175,179,183,187,191,195,199,
+                                                         204,208,212,216,220,224,228,232,236,240,
+                                                         244,248,252,257,261,265,269,273,277,281,
+                                                         285,289,293,297,301,306,310,314,318,322,
+                                                         326,330,334,338,342,346,350,354,359,363,
+                                                         367,371,375,379,383,387,391,395,399,403};
+
+
+const unsigned short s_square_3A [SIZEOF_SIGNALS] = {408,408,408,408,408,408,408,408,408,408,
+                                                     408,408,408,408,408,408,408,408,408,408,
+                                                     408,408,408,408,408,408,408,408,408,408,
+                                                     408,408,408,408,408,408,408,408,408,408,
+                                                     408,408,408,408,408,408,408,408,408,408,
+                                                     408,408,408,408,408,408,408,408,408,408,
+                                                     408,408,408,408,408,408,408,408,408,408,
+                                                     408,408,408,408,408,408,408,408,408,408,
+                                                     408,408,408,408,408,408,408,408,408,408,
+                                                     408,408,408,408,408,408,408,408,408,408};
+#endif
+
 
 #ifdef MAX_CURRENT_3_0_A
 //Signals Templates
@@ -138,6 +207,7 @@ const unsigned short s_square_3A [SIZEOF_SIGNALS] = {465,465,465,465,465,465,465
                                                      465,465,465,465,465,465,465,465,465,465,
                                                      465,465,465,465,465,465,465,465,465,465};
 #endif
+
 
 #ifdef MAX_CURRENT_3_6_A
 //Signals Templates

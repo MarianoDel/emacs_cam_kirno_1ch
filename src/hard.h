@@ -21,21 +21,34 @@
 
 
 //-------- Max Current Allowed on Bobins ----------------
+#define MAX_CURRENT_2_5_A
 // #define MAX_CURRENT_3_0_A
-#define MAX_CURRENT_3_6_A
+// #define MAX_CURRENT_3_6_A
 
 //-------- Type of Program ----------------
 #define SYSTEM_AUTONOMOUS
 // #define SYSTEM_WITH_MANAGEMENT
 
+// for combined system treatment
+#define USE_TREATMENT_COMBINED
+
 #ifdef SYSTEM_AUTONOMOUS
-#define AUTONOMOUS_POWER    50
-#define AUTONOMOUS_FREQ_INT    10
+#define AUTONOMOUS_POWER    55
+#define AUTONOMOUS_FREQ_INT    60
 #define AUTONOMOUS_FREQ_DEC    0
-#define AUTONOMOUS_SIGNAL    SINUSOIDAL_SIGNAL
-// #define AUTONOMOUS_SIGNAL    SQUARE_SIGNAL
+// #define AUTONOMOUS_SIGNAL    SINUSOIDAL_SIGNAL
+#define AUTONOMOUS_SIGNAL    SQUARE_SIGNAL
 // #define AUTONOMOUS_SIGNAL    TRIANGULAR_SIGNAL
-#define AUTONOMOUS_TIME    15
+#define AUTONOMOUS_TIME    35
+
+// treatment combined
+#define AUTONOMOUS_POWER_COMBINED    70
+#define AUTONOMOUS_FREQ_INT_COMBINED    7
+#define AUTONOMOUS_FREQ_DEC_COMBINED    0
+// #define AUTONOMOUS_SIGNAL_COMBINED    SINUSOIDAL_SIGNAL
+// #define AUTONOMOUS_SIGNAL    SQUARE_SIGNAL
+#define AUTONOMOUS_SIGNAL_COMBINED    TRIANGULAR_SIGNAL
+#define AUTONOMOUS_TIME_COMBINED    10
 #endif
 //-------- Type of Program and Features ----------------
 //Si utiliza la proteccion con la int para cortar la corriente
